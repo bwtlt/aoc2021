@@ -14,7 +14,7 @@ struct Grid {
 }
 
 fn main() {
-    if let Ok(mut lines) = read_lines("./input_example.txt") {
+    if let Ok(mut lines) = read_lines("./input.txt") {
         let drawn_numbers: Vec<u32> = lines
             .next()
             .unwrap()
@@ -27,7 +27,7 @@ fn main() {
             .map(|line| line.unwrap())
             .filter(|line| !line.is_empty())
             .collect();
-        let mut grids: Vec<Vec<Vec<Number>>> = gridlines
+        let mut grids: Vec<Grid> = gridlines
             .chunks(5)
             .map(|lines| {
                 lines
@@ -43,24 +43,40 @@ fn main() {
                     })
                     .collect::<Vec<Vec<Number>>>()
             })
-            .collect::<Vec<Vec<Vec<Number>>>>();
+            .map(|grid| Grid {
+                numbers: grid,
+                won: false,
+            })
+            .collect::<Vec<Grid>>();
 
         println!("Part1");
         let mut won = false;
         for number in &drawn_numbers {
             grids.iter_mut().for_each(|grid| {
-                if let Some(mut found) = grid.iter_mut().flatten().find(|x| x.number == *number) {
+                if let Some(mut found) = grid
+                    .numbers
+                    .iter_mut()
+                    .flatten()
+                    .find(|x| x.number == *number)
+                {
                     found.drawn = true;
                 }
             });
             // check grids
             grids.iter().for_each(|grid| {
                 // no need to check if less than 5 numbers drawn are present
-                if grid.iter().flatten().filter(|number| number.drawn).count() >= 5 {
+                if grid
+                    .numbers
+                    .iter()
+                    .flatten()
+                    .filter(|number| number.drawn)
+                    .count()
+                    >= 5
+                {
                     //check rows
-                    grid.iter().for_each(|line| {
+                    grid.numbers.iter().for_each(|line| {
                         if is_complete(line) {
-                            compute_result(*number, grid);
+                            compute_result(*number, &grid.numbers);
                             won = true;
                         }
                     });
@@ -68,11 +84,11 @@ fn main() {
                     if !won {
                         for i in 0..5 {
                             let mut column = Vec::new();
-                            for item in grid.iter().take(5) {
+                            for item in grid.numbers.iter().take(5) {
                                 column.push(item[i]);
                             }
                             if is_complete(&column) {
-                                compute_result(*number, grid);
+                                compute_result(*number, &grid.numbers);
                                 won = true;
                             }
                         }
@@ -85,19 +101,36 @@ fn main() {
         }
 
         println!("Part2");
-        let mut won = false;
+        grids.iter_mut().for_each(|grid| {
+            grid.numbers
+                .iter_mut()
+                .for_each(|line| line.iter_mut().for_each(|number| number.drawn = false))
+        });
         for number in &drawn_numbers {
             grids.iter_mut().for_each(|grid| {
-                if let Some(mut found) = grid.iter_mut().flatten().find(|x| x.number == *number) {
+                if let Some(mut found) = grid
+                    .numbers
+                    .iter_mut()
+                    .flatten()
+                    .find(|x| x.number == *number)
+                {
                     found.drawn = true;
                 }
             });
             // check grids
-            grids.iter().for_each(|grid| {
+            grids.iter_mut().for_each(|grid| {
+                let mut won = false;
                 // no need to check if less than 5 numbers drawn are present
-                if grid.iter().flatten().filter(|number| number.drawn).count() >= 5 {
+                if grid
+                    .numbers
+                    .iter()
+                    .flatten()
+                    .filter(|number| number.drawn)
+                    .count()
+                    >= 5
+                {
                     //check rows
-                    grid.iter().for_each(|line| {
+                    grid.numbers.iter().for_each(|line| {
                         if is_complete(line) {
                             won = true;
                         }
@@ -106,7 +139,7 @@ fn main() {
                     if !won {
                         for i in 0..5 {
                             let mut column = Vec::new();
-                            for item in grid.iter().take(5) {
+                            for item in grid.numbers.iter().take(5) {
                                 column.push(item[i]);
                             }
                             if is_complete(&column) {
@@ -115,12 +148,18 @@ fn main() {
                         }
                     }
                 }
+                grid.won = won;
             });
-            if won {
+            if grids.len() == 1 && grids[0].won {
+                compute_result(*number, &grids[0].numbers);
                 break;
+            } else {
+                grids = grids
+                    .into_iter()
+                    .filter(|grid| !grid.won)
+                    .collect::<Vec<Grid>>();
             }
         }
-
     }
 }
 
