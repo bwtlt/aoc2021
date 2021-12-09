@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "input_parser"
+		},
+		{
+			"path": "day5"
+		},
+		{
+			"path": "day1"
+		},
+		{
+			"path": "day2"
+		},
+		{
+			"path": "day3"
+		},
+		{
+			"path": "day4"
+		}
+	],
+	"settings": {}
+}

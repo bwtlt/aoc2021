@@ -1,7 +1,5 @@
 use regex::Regex;
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
+use input_parser::read_lines;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
@@ -149,14 +147,4 @@ fn main() {
         println!("Part1 answer {}", compute_answer(&vents, false));
         println!("Part2 answer {}", compute_answer(&vents, true));
     }
-}
-
-// The output is wrapped in a Result to allow matching on errors
-// Returns an Iterator to the Reader of the lines of the file.
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
 }

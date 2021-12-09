@@ -1,8 +1,6 @@
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
 use std::str::FromStr;
 use std::num::ParseIntError;
+use input_parser::read_lines;
 
 enum Command {
     None,
@@ -50,14 +48,4 @@ fn main() {
         println!("Part 1 solution: {}", part1.horizontal * part1.depth);
         println!("Part 2 solution: {}", part2.horizontal * part2.depth);
     }
-}
-
-// The output is wrapped in a Result to allow matching on errors
-// Returns an Iterator to the Reader of the lines of the file.
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
 }

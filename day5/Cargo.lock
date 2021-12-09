@@ -15,8 +15,13 @@ dependencies = [
 name = "day5"
 version = "0.1.0"
 dependencies = [
+ "input_parser",
  "regex",
 ]
+
+[[package]]
+name = "input_parser"
+version = "0.1.0"
 
 [[package]]
 name = "memchr"
